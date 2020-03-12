@@ -35,18 +35,19 @@ while i < len(symbols):
         free_cash_flow_res = requests.get('https://financialmodelingprep.com/api/v3/financials/cash-flow-statement/' + model['symbol'])
         free_cash_flow_statement = free_cash_flow_res.json()['financials'][0]
         free_cash_flow = float(free_cash_flow_statement['Free Cash Flow'])
-        if fcf < 0:
+        if free_cash_flow < 0:
             continue
-        income_res = requests.get('https://financialmodelingprep.com/api/v3/financials/cash-flow-statement/' + model['symbol'])
+        income_res = requests.get('https://financialmodelingprep.com/api/v3/financials/income-statement/' + model['symbol'])
         income_statement = income_res.json()['financials'][0]
         net_income = float(income_statement['Net Income'])
         cash_income_ratio = free_cash_flow / net_income
         target_string = f'Symbol {model["symbol"]}, '
-        target_string += f'Price: ${model['Stock Price']:.2f}, '
-        target_string += f'DCF: ${model['dcf']:.2f}, '
+        target_string += f'Price: ${model["Stock Price"]:.2f}, '
+        target_string += f'DCF: ${model["dcf"]:.2f}, '
         target_string += f'Value Ratio: {100 * model["Stock Price"] / model["dcf"]:.2f}%, '
         target_string += f'Net Income: ${net_income:,}, '
         target_string += f'Free Cash Flow: ${free_cash_flow:,}, '
+        target_string += f'FCF to NI Ratio: {100 * free_cash_flow / net_income:.2f}%'
         targets.append(target_string)
         print(target_string)
     i += batch_size
